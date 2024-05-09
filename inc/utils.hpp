@@ -11,4 +11,18 @@ namespace utils
     std::string& trim_right(std::string& str, std::string_view chars = "\t\n\v\f\r ") noexcept;
     std::string& trim(std::string& str, std::string_view chars = "\t\n\v\f\r ") noexcept;
     std::vector<std::string> split(const std::string& str, std::string_view delim = " ") noexcept;
+    
+    enum class string_color
+    {
+        black = 0,
+        red,
+        green,
+        yellow,
+        blue,
+        magenta,
+        cyan,
+        white,
+        reset
+    };
+    std::string& colorize(std::string& str, string_color clr) noexcept;
 }
