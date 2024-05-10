@@ -1,6 +1,7 @@
 #include "logger.hpp"
 #include "server.hpp"
 #include "cli.hpp"
+#include "version.hpp"
 
 #include <argparse.hpp>
 
@@ -14,7 +15,7 @@ std::unique_ptr<server> Manager;
 
 int main(int argc, const char* argv[])
 {
-    argparse::ArgumentParser parser("awdshells", "0.1.0");
+    argparse::ArgumentParser parser{ PROJECT_NAME, VERSION_STR };
     parser.add_argument("-h", "--help").help("Show this help message and exit.").default_value(false).implicit_value(true);
     parser.add_argument("-v", "--version").help("Show version").default_value(false).implicit_value(true);
     parser.add_argument("-l", "--level").help("Set log level(raw, success, message, warning, error)").default_value("success");
@@ -32,7 +33,7 @@ int main(int argc, const char* argv[])
 
     if (parser.get<bool>("--version"))
     {
-        std::println("awdshells 0.1.0");
+        std::println(PROJECT_FULL_NAME);
         return 0;
     }
 
