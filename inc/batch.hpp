@@ -71,32 +71,7 @@ public:
     }
     asio::awaitable<void> async_for_each_session(auto func, bool only_alive = true) noexcept
     {
-        std::lock_guard lock{ sessions_mutex_ };
-        auto alive_count = std::count_if(sessions_.begin(), sessions_.end(), [only_alive](const auto& id)
-        {
-            const auto manager = Manager->get_session(id);
-            if (!manager)
-                return false;
-            return !only_alive || manager->is_alive();
-        });
-        std::latch waiter{ alive_count }; // FIXME: may underflow
-
-        auto func_wrapper = [func, &waiter](std::shared_ptr<session> session) -> asio::awaitable<void>
-        {
-            co_await func(session);
-            waiter.count_down();
-        };
-
-        for (const auto& id : sessions_)
-        {
-            const auto session = Manager->get_session(id);
-            if (!session)
-                continue;
-            if (!only_alive || session->is_alive())
-                asio::co_spawn(Manager->io_context(), func_wrapper(session), asio::detached);
-        }
-
-        waiter.wait();
+        for_each_session(func, only_alive);
         co_return;
     }
 
