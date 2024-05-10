@@ -9,6 +9,8 @@ asio::awaitable<std::string> session::async_read() noexcept
 {
     try
     {
+        is_timeout_ = false;
+
         std::lock_guard lock{ read_mutex_ };
         asio::streambuf buffer;
         co_await asio::async_read_until(socket_, buffer, "\0", asio::use_awaitable);
@@ -28,6 +30,7 @@ asio::awaitable<std::string> session::async_read(std::chrono::milliseconds timeo
     try
     {
         is_timeout_ = false;
+
         std::lock_guard lock{ read_mutex_ };
         std::string buffer;
 
@@ -90,6 +93,8 @@ asio::awaitable<std::string> session::async_read_until(const std::string& delim)
 {
     try
     {
+        is_timeout_ = false;
+
         const std::string delim_copy = delim;
         std::lock_guard lock{ read_mutex_ };
         // Try to find delimiter in the buffer
@@ -123,6 +128,8 @@ asio::awaitable<std::string> session::async_read_until(const std::string& delim,
 {
     try
     {
+        is_timeout_ = false;
+
         const std::string delim_copy = delim;
         is_timeout_ = false;
         std::lock_guard lock{ read_mutex_ };
