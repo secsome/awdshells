@@ -77,6 +77,7 @@ void batch::operate() noexcept
 {
     Log->message("Operating on batch {}\n", *this);
 
+    Manager->set_alive_checker_status(false);
     std::string command;
     while (true)
     {
@@ -154,5 +155,6 @@ void batch::operate() noexcept
                 , args[0]);
         }
     }
+    Manager->set_alive_checker_status(true);
 }
 

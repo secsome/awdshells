@@ -223,6 +223,7 @@ void cli::handle_session(std::span<std::string> args) noexcept
             return;
         }
 
+        Manager->set_alive_checker_status(false);
         Log->message("Execute command on all sessions...\n");
         std::string command_to_execute;
         for (size_t i = 1; i < args.size(); ++i)
@@ -234,6 +235,7 @@ void cli::handle_session(std::span<std::string> args) noexcept
             const auto result = co_await session->execute_command(command_to_execute);
             std::print("{}", result);
         });
+        Manager->set_alive_checker_status(true);
     }
     else
         Log->warning("session: unknown subcommand '{}'\n", args[0]);
@@ -241,6 +243,7 @@ void cli::handle_session(std::span<std::string> args) noexcept
 
 void cli::handle_clear(std::span<std::string> args) noexcept
 {
+    Manager->set_alive_checker_status(false);
     std::vector<session::id_type> sessions_to_erase;
     std::mutex mutex;
     if (args.empty())
@@ -274,6 +277,8 @@ void cli::handle_clear(std::span<std::string> args) noexcept
 
     for (const auto& id : sessions_to_erase)
         Manager->remove_session(id);
+
+    Manager->set_alive_checker_status(true);
 }
 
 void cli::handle_batch(std::span<std::string> args) noexcept

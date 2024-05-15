@@ -240,7 +240,8 @@ void session::interact(std::istream& is, std::ostream& os)
         }
         sem.release();
     };
-
+    Manager->set_alive_checker_status(false);
     asio::co_spawn(socket_.get_executor(), impl(), asio::detached);
     sem.acquire();
+    Manager->set_alive_checker_status(true);
 }

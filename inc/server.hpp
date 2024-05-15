@@ -27,12 +27,14 @@ public:
 
     void remove_session(session::id_type id) noexcept;
 
+    void set_alive_checker_status(bool enable) noexcept;
+
     void for_each_session(auto func, bool only_alive = true) noexcept
     {
         std::lock_guard lock{ sessions_mutex_ };
         auto alive_count = std::count_if(sessions_.begin(), sessions_.end(), [only_alive](const auto& itr)
         {
-            return !only_alive || itr.second->is_alive();
+            return (!only_alive || itr.second->is_alive());
         });
         std::latch waiter{ alive_count }; // FIXME: may underflow
 
@@ -115,6 +117,7 @@ private:
     std::atomic_size_t current_session_id_{ 0 };
 
     std::atomic_bool is_running_{ false };
+    std::atomic_bool skip_alive_check_{ false };
 };
 
 template <>

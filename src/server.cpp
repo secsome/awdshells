@@ -69,6 +69,11 @@ void server::remove_session(session::id_type id) noexcept
         Log->error("Session {} not found\n", id);
 }
 
+void server::set_alive_checker_status(bool enable) noexcept
+{
+    skip_alive_check_ = !enable;
+}
+
 asio::awaitable<void> server::accept_connection() noexcept
 {
     auto executor = co_await asio::this_coro::executor;
@@ -125,6 +130,9 @@ void server::alive_checker() noexcept
     {
         asio::steady_timer timer{ io_context_, check_interval };
         timer.wait();
+
+        if (skip_alive_check_)
+            continue;
 
         Log->message("server::alive_checker is running...\n");
         std::vector<session::id_type> sessions_to_erase;
